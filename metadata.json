@@ -1,0 +1,6 @@
+{
+  "name": "AI Science Lab",
+  "description": "Virtual science laboratory and interactive exploration hub with Chemical Reaction, DNA & Genetics, and Natural Disasters labs.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
