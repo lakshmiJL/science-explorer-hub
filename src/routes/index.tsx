@@ -6,6 +6,7 @@ import { LabAssistant } from "../components/LabAssistant";
 import { ChemicalReactionLab } from "../components/chemistry/ChemicalReactionLab";
 import { DnaGeneticsLab } from "../components/genetics/DnaGeneticsLab";
 import { NaturalDisastersLab } from "../components/disasters/NaturalDisastersLab";
+import { ScienceLabHeroAnimation } from "../components/home/ScienceLabHeroAnimation";
 import { LabType } from "../types/science";
 import {
   Beaker,
@@ -49,7 +50,7 @@ function ScienceExplorerApp() {
         {activeLab === "home" && (
           <div className="space-y-12 animate-in fade-in duration-300">
             {/* HERO SECTION */}
-            <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 p-8 sm:p-12 text-center text-white shadow-2xl">
+            <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 p-6 sm:p-10 text-center text-white shadow-2xl space-y-8">
               {/* Subtle Ambient Glow */}
               <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-96 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
               <div className="absolute -bottom-24 right-10 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
@@ -68,12 +69,12 @@ function ScienceExplorerApp() {
                 </h1>
 
                 <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto">
-                  Step inside a virtual science laboratory and discover the hidden forces behind
-                  chemistry, genetics, and our planet.
+                  Step inside an interactive virtual science laboratory. Watch atoms collide,
+                  synthesize DNA base pairs, and trigger simulated geophysical forces in real-time.
                 </p>
 
                 {/* Quick Learning Stats */}
-                <div className="pt-4 flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-400">
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-slate-400">
                   <div className="flex items-center gap-1.5 rounded-full border border-slate-800 bg-slate-900/80 px-3 py-1">
                     <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                     <span>
@@ -89,6 +90,11 @@ function ScienceExplorerApp() {
                     <span>{progress.disastersSimulated.length} Disasters Modeled</span>
                   </div>
                 </div>
+              </div>
+
+              {/* INTERACTIVE SCIENCE LAB ANIMATION STAGE */}
+              <div className="relative z-10 max-w-5xl mx-auto text-left">
+                <ScienceLabHeroAnimation onSelectLab={setActiveLab} />
               </div>
             </section>
 

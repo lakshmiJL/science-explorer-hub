@@ -11,6 +11,7 @@ import { GeneticTrait, ParentCreature, OffspringCreature } from "../../types/sci
 import { useLabProgress } from "../../context/LabProgressContext";
 import { QuizRunner } from "../quiz/QuizRunner";
 import { LabLearningCycle, LearningStage } from "../common/LabLearningCycle";
+import { CreatureCharacterViewer } from "./CreatureCharacterViewer";
 import {
   Dna,
   Sparkles,
@@ -274,6 +275,11 @@ export const DnaGeneticsLab: React.FC = () => {
                 </span>
               </div>
 
+              {/* Parent A Character Live Preview */}
+              <div className="flex justify-center rounded-xl bg-slate-950/60 border border-cyan-500/20 py-1">
+                <CreatureCharacterViewer creature={parentA} size="sm" interactive={false} />
+              </div>
+
               <div className="space-y-2">
                 {GENETIC_TRAITS.map((trait) => {
                   const currentGen = parentA.genotypes[trait.category] ?? [
@@ -330,6 +336,11 @@ export const DnaGeneticsLab: React.FC = () => {
                 <span className="text-[10px] rounded-full bg-purple-500/10 px-2.5 py-0.5 font-mono text-purple-400 font-semibold">
                   Parent Beta
                 </span>
+              </div>
+
+              {/* Parent B Character Live Preview */}
+              <div className="flex justify-center rounded-xl bg-slate-950/60 border border-purple-500/20 py-1">
+                <CreatureCharacterViewer creature={parentB} size="sm" interactive={false} />
               </div>
 
               <div className="space-y-2">
@@ -525,30 +536,17 @@ export const DnaGeneticsLab: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Creature Visual Representation */}
-                <div className="flex flex-col items-center justify-center rounded-2xl border border-purple-500/20 bg-gradient-to-b from-slate-900 to-slate-950 p-6 text-center shadow-inner">
-                  <div
-                    className="relative flex h-28 w-28 items-center justify-center rounded-full border-2 transition-all duration-500"
-                    style={{
-                      borderColor: offspring.phenotypes.furColor?.visualValue || "#a855f7",
-                      boxShadow: `0 0 35px ${offspring.phenotypes.furColor?.visualValue || "#a855f7"}40`,
-                    }}
-                  >
-                    <Sparkles
-                      className="h-12 w-12 transition-transform duration-700"
-                      style={{
-                        color: offspring.phenotypes.furColor?.visualValue || "#a855f7",
-                      }}
-                    />
-                    <div className="absolute -top-2 rounded-full border border-slate-800 bg-slate-950 px-2 py-0.5 text-[9px] font-bold text-slate-300">
-                      {offspring.phenotypes.horns?.name}
-                    </div>
-                  </div>
+                {/* Creature Character Visual Representation */}
+                <div className="flex flex-col items-center justify-center rounded-2xl border border-purple-500/30 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 p-6 text-center shadow-inner">
+                  <CreatureCharacterViewer creature={offspring} size="lg" interactive={true} />
 
                   <div className="mt-4 text-xs text-slate-300 font-medium">
                     Expressed Phenotype: {offspring.dominantCount} Dominant Traits ·{" "}
                     {offspring.recessiveCount} Recessive Traits
                   </div>
+                  <span className="text-[11px] text-purple-400 font-mono mt-0.5">
+                    ✨ Click or tap your creature to interact!
+                  </span>
                 </div>
 
                 {/* Trait Inheritance Breakdown */}

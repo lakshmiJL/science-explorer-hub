@@ -5,6 +5,7 @@ import { useLabProgress } from "../../context/LabProgressContext";
 import { QuizRunner } from "../quiz/QuizRunner";
 import { LabLearningCycle, LearningStage } from "../common/LabLearningCycle";
 import { Molecule3DViewer } from "./Molecule3DViewer";
+import { ChemicalBondingSimulator } from "./ChemicalBondingSimulator";
 import {
   Beaker,
   Flame,
@@ -20,6 +21,7 @@ import {
   Move,
   Layers,
   Info,
+  Zap,
 } from "lucide-react";
 
 export const ChemicalReactionLab: React.FC = () => {
@@ -31,6 +33,7 @@ export const ChemicalReactionLab: React.FC = () => {
   const [reactionState, setReactionState] = useState<"idle" | "reacting" | "completed">("idle");
   const [matchedReaction, setMatchedReaction] = useState<ChemicalReaction | null>(null);
   const [viewMode, setViewMode] = useState<"simple" | "molecular">("simple");
+  const [showBondingAnimation, setShowBondingAnimation] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [inspectedCompound, setInspectedCompound] = useState<Compound | null>(null);
   const [showWhatAmISeeing, setShowWhatAmISeeing] = useState(true);
@@ -77,6 +80,7 @@ export const ChemicalReactionLab: React.FC = () => {
     setSelectedReactants([]);
     setReactionState("idle");
     setMatchedReaction(null);
+    setShowBondingAnimation(false);
   };
 
   const findMatchingReaction = () => {
@@ -95,6 +99,7 @@ export const ChemicalReactionLab: React.FC = () => {
 
     setReactionState("reacting");
     setMatchedReaction(rx);
+    setShowBondingAnimation(true);
     addCompletedStage("experiment");
 
     setTimeout(() => {
@@ -102,7 +107,7 @@ export const ChemicalReactionLab: React.FC = () => {
       markReactionCompleted(rx.id);
       addCompletedStage("observe");
       addCompletedStage("understand");
-    }, 2200);
+    }, 2800);
   };
 
   const potentialMatch = findMatchingReaction();
@@ -316,6 +321,21 @@ export const ChemicalReactionLab: React.FC = () => {
                     <span>{viewMode === "simple" ? "3D Structure View" : "Simple View"}</span>
                   </button>
 
+                  {/* Element Bonding View Toggle */}
+                  {(matchedReaction || potentialMatch) && (
+                    <button
+                      onClick={() => setShowBondingAnimation(!showBondingAnimation)}
+                      className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${
+                        showBondingAnimation
+                          ? "border-emerald-500 bg-emerald-500/20 text-emerald-300"
+                          : "border-border/80 bg-background text-foreground hover:bg-muted"
+                      }`}
+                    >
+                      <Zap className="h-3.5 w-3.5 text-emerald-400" />
+                      <span>{showBondingAnimation ? "Chamber View" : "Element Bonding View"}</span>
+                    </button>
+                  )}
+
                   <button
                     onClick={handleClearChamber}
                     className="flex items-center gap-1.5 rounded-lg border border-border/80 bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-red-500 hover:bg-muted"
@@ -374,187 +394,208 @@ export const ChemicalReactionLab: React.FC = () => {
                   </div>
                 )}
 
-                {/* Loaded Reactants */}
-                {selectedReactants.length > 0 && reactionState === "idle" && (
-                  <div className="z-10 flex w-full flex-col items-center justify-center space-y-6">
-                    <div className="flex flex-wrap items-center justify-center gap-6">
-                      {selectedReactants.map((rId) => {
-                        const comp = COMPOUNDS[rId]!;
-                        return (
-                          <div
-                            key={rId}
-                            onClick={() => setInspectedCompound(comp)}
-                            className="flex cursor-pointer flex-col items-center rounded-2xl border border-emerald-500/30 bg-slate-900/90 p-4 backdrop-blur-md transition-all hover:scale-105 hover:border-emerald-400"
-                            title="Click to inspect 3D molecule"
-                          >
-                            <span className="font-mono text-3xl font-black text-emerald-400">
-                              {comp.formula}
-                            </span>
-                            <span className="mt-1 text-xs font-semibold text-slate-200">
-                              {comp.name}
-                            </span>
-                            <span className="text-[10px] text-slate-400 capitalize">
-                              ({comp.state})
-                            </span>
+                {/* Element Bonding Simulator View */}
+                {showBondingAnimation && (matchedReaction || potentialMatch) ? (
+                  <div className="z-10 w-full animate-in zoom-in-95 duration-300">
+                    <ChemicalBondingSimulator
+                      reaction={matchedReaction || potentialMatch!}
+                      onClose={() => setShowBondingAnimation(false)}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    {/* Loaded Reactants */}
+                    {selectedReactants.length > 0 && reactionState === "idle" && (
+                      <div className="z-10 flex w-full flex-col items-center justify-center space-y-6">
+                        <div className="flex flex-wrap items-center justify-center gap-6">
+                          {selectedReactants.map((rId) => {
+                            const comp = COMPOUNDS[rId]!;
+                            return (
+                              <div
+                                key={rId}
+                                onClick={() => setInspectedCompound(comp)}
+                                className="flex cursor-pointer flex-col items-center rounded-2xl border border-emerald-500/30 bg-slate-900/90 p-4 backdrop-blur-md transition-all hover:scale-105 hover:border-emerald-400"
+                                title="Click to inspect 3D molecule"
+                              >
+                                <span className="font-mono text-3xl font-black text-emerald-400">
+                                  {comp.formula}
+                                </span>
+                                <span className="mt-1 text-xs font-semibold text-slate-200">
+                                  {comp.name}
+                                </span>
+                                <span className="text-[10px] text-slate-400 capitalize">
+                                  ({comp.state})
+                                </span>
 
-                            {/* Atom preview dots */}
-                            <div className="mt-3 flex items-center gap-1">
-                              {comp.atoms.map((at, idx) => (
-                                <div
-                                  key={idx}
-                                  className="flex items-center gap-0.5 rounded-full border border-white/20 px-1.5 py-0.5 text-[9px]"
-                                >
-                                  <span
-                                    className="h-2 w-2 rounded-full"
-                                    style={{ backgroundColor: at.color }}
-                                  />
-                                  <span>
-                                    {at.element}
-                                    {at.count > 1 ? at.count : ""}
-                                  </span>
+                                {/* Atom preview dots */}
+                                <div className="mt-3 flex items-center gap-1">
+                                  {comp.atoms.map((at, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="flex items-center gap-0.5 rounded-full border border-white/20 px-1.5 py-0.5 text-[9px]"
+                                    >
+                                      <span
+                                        className="h-2 w-2 rounded-full"
+                                        style={{ backgroundColor: at.color }}
+                                      />
+                                      <span>
+                                        {at.element}
+                                        {at.count > 1 ? at.count : ""}
+                                      </span>
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Compatibility feedback */}
-                    <div className="text-center">
-                      {potentialMatch ? (
-                        <div className="flex flex-col items-center gap-2">
-                          <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-semibold text-emerald-300">
-                            Compatible Reaction Identified: {potentialMatch.name}
-                          </span>
-                          <button
-                            onClick={handleStartReaction}
-                            className="flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-2.5 font-bold text-slate-950 shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-400 hover:scale-105 active:scale-95"
-                          >
-                            <Play className="h-4 w-4 fill-current" />
-                            Initiate Reaction
-                          </button>
+                              </div>
+                            );
+                          })}
                         </div>
-                      ) : (
-                        <div className="max-w-md rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">
-                          {selectedReactants.length === 1 &&
-                          selectedReactants[0] === "caco3" &&
-                          !applyHeat ? (
-                            <span>
-                              Calcium carbonate requires heat! Turn on the{" "}
-                              <strong>Bunsen Heat Source</strong>.
-                            </span>
-                          ) : selectedReactants.length === 1 ? (
-                            <span>Add another compound to form a complete reaction mixture.</span>
+
+                        {/* Compatibility feedback */}
+                        <div className="text-center">
+                          {potentialMatch ? (
+                            <div className="flex flex-col items-center gap-2">
+                              <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-semibold text-emerald-300">
+                                Compatible Reaction Identified: {potentialMatch.name}
+                              </span>
+                              <button
+                                onClick={handleStartReaction}
+                                className="flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-2.5 font-bold text-slate-950 shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-400 hover:scale-105 active:scale-95"
+                              >
+                                <Play className="h-4 w-4 fill-current" />
+                                Initiate Reaction
+                              </button>
+                            </div>
                           ) : (
-                            <span>
-                              These two compounds do not readily react under standard conditions.
-                              Try HCl + NaOH, Fe + O₂, or CuSO₄ + Zn.
-                            </span>
+                            <div className="max-w-md rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">
+                              {selectedReactants.length === 1 &&
+                              selectedReactants[0] === "caco3" &&
+                              !applyHeat ? (
+                                <span>
+                                  Calcium carbonate requires heat! Turn on the{" "}
+                                  <strong>Bunsen Heat Source</strong>.
+                                </span>
+                              ) : selectedReactants.length === 1 ? (
+                                <span>
+                                  Add another compound to form a complete reaction mixture.
+                                </span>
+                              ) : (
+                                <span>
+                                  These two compounds do not readily react under standard
+                                  conditions. Try HCl + NaOH, Fe + O₂, or CuSO₄ + Zn.
+                                </span>
+                              )}
+                            </div>
                           )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                      </div>
+                    )}
 
-                {/* State: Reacting */}
-                {reactionState === "reacting" && (
-                  <div className="z-10 flex flex-col items-center justify-center text-center space-y-4">
-                    <div className="relative flex h-24 w-24 items-center justify-center">
-                      <div className="absolute inset-0 rounded-full border-4 border-emerald-400/20 border-t-emerald-400 animate-spin" />
-                      <Atom className="h-12 w-12 text-emerald-400 animate-pulse" />
-                    </div>
-                    <div className="space-y-1">
-                      <h4 className="text-lg font-bold text-emerald-300">
-                        Molecular Bonds Severing & Recombining...
-                      </h4>
-                      <p className="text-xs text-slate-400 max-w-sm">
-                        Molecules collide with activation energy. Old chemical bonds break and new
-                        bonds form!
-                      </p>
-                    </div>
-                  </div>
-                )}
+                    {/* State: Reacting */}
+                    {reactionState === "reacting" && (
+                      <div className="z-10 flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="relative flex h-24 w-24 items-center justify-center">
+                          <div className="absolute inset-0 rounded-full border-4 border-emerald-400/20 border-t-emerald-400 animate-spin" />
+                          <Atom className="h-12 w-12 text-emerald-400 animate-pulse" />
+                        </div>
+                        <div className="space-y-1">
+                          <h4 className="text-lg font-bold text-emerald-300">
+                            Molecular Bonds Severing & Recombining...
+                          </h4>
+                          <p className="text-xs text-slate-400 max-w-sm">
+                            Molecules collide with activation energy. Old chemical bonds break and
+                            new bonds form!
+                          </p>
+                        </div>
+                      </div>
+                    )}
 
-                {/* State: Completed Products */}
-                {reactionState === "completed" && matchedReaction && (
-                  <div className="z-10 flex w-full flex-col items-center justify-center space-y-5 animate-in zoom-in-95 duration-300">
-                    <div className="flex items-center gap-2 rounded-full bg-emerald-500/20 border border-emerald-500/50 px-3.5 py-1 text-xs font-semibold text-emerald-300">
-                      <Sparkles className="h-3.5 w-3.5" /> Reaction Complete: {matchedReaction.type}
-                    </div>
+                    {/* State: Completed Products */}
+                    {reactionState === "completed" && matchedReaction && (
+                      <div className="z-10 flex w-full flex-col items-center justify-center space-y-5 animate-in zoom-in-95 duration-300">
+                        <div className="flex items-center gap-2 rounded-full bg-emerald-500/20 border border-emerald-500/50 px-3.5 py-1 text-xs font-semibold text-emerald-300">
+                          <Sparkles className="h-3.5 w-3.5" /> Reaction Complete:{" "}
+                          {matchedReaction.type}
+                        </div>
 
-                    {/* Product Cards */}
-                    <div className="flex flex-wrap items-center justify-center gap-4">
-                      {matchedReaction.products.map((pId) => {
-                        const productComp = COMPOUNDS[pId]!;
-                        return (
-                          <div
-                            key={pId}
-                            onClick={() => setInspectedCompound(productComp)}
-                            className="flex cursor-pointer flex-col items-center rounded-2xl border border-emerald-400/50 bg-slate-900/90 p-4 shadow-lg backdrop-blur-md transition-all hover:scale-105"
-                            title="Click to inspect 3D molecule"
-                          >
-                            <span className="font-mono text-3xl font-black text-emerald-300">
-                              {productComp.formula}
-                            </span>
-                            <span className="mt-1 text-xs font-bold text-slate-100">
-                              {productComp.name}
-                            </span>
-                            <span className="text-[10px] text-slate-400 capitalize">
-                              ({productComp.state})
-                            </span>
+                        {/* Product Cards */}
+                        <div className="flex flex-wrap items-center justify-center gap-4">
+                          {matchedReaction.products.map((pId) => {
+                            const productComp = COMPOUNDS[pId]!;
+                            return (
+                              <div
+                                key={pId}
+                                onClick={() => setInspectedCompound(productComp)}
+                                className="flex cursor-pointer flex-col items-center rounded-2xl border border-emerald-400/50 bg-slate-900/90 p-4 shadow-lg backdrop-blur-md transition-all hover:scale-105"
+                                title="Click to inspect 3D molecule"
+                              >
+                                <span className="font-mono text-3xl font-black text-emerald-300">
+                                  {productComp.formula}
+                                </span>
+                                <span className="mt-1 text-xs font-bold text-slate-100">
+                                  {productComp.name}
+                                </span>
+                                <span className="text-[10px] text-slate-400 capitalize">
+                                  ({productComp.state})
+                                </span>
 
-                            <div className="mt-3 flex items-center gap-1">
-                              {productComp.atoms.map((at, idx) => (
-                                <div
-                                  key={idx}
-                                  className="flex items-center gap-0.5 rounded-full border border-white/20 px-1.5 py-0.5 text-[9px]"
-                                >
-                                  <span
-                                    className="h-2 w-2 rounded-full"
-                                    style={{ backgroundColor: at.color }}
-                                  />
-                                  <span>
-                                    {at.element}
-                                    {at.count > 1 ? at.count : ""}
-                                  </span>
+                                <div className="mt-3 flex items-center gap-1">
+                                  {productComp.atoms.map((at, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="flex items-center gap-0.5 rounded-full border border-white/20 px-1.5 py-0.5 text-[9px]"
+                                    >
+                                      <span
+                                        className="h-2 w-2 rounded-full"
+                                        style={{ backgroundColor: at.color }}
+                                      />
+                                      <span>
+                                        {at.element}
+                                        {at.count > 1 ? at.count : ""}
+                                      </span>
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
-                            </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Balanced Chemical Equation */}
+                        <div className="rounded-xl border border-emerald-500/40 bg-slate-900/90 px-5 py-2.5 text-center">
+                          <span className="text-[11px] text-slate-400 font-mono">
+                            Balanced Chemical Equation:
+                          </span>
+                          <div className="text-sm sm:text-base font-bold text-emerald-400 font-mono tracking-wide mt-0.5">
+                            {matchedReaction.equation}
                           </div>
-                        );
-                      })}
-                    </div>
+                          <div className="text-xs text-slate-300 mt-1">
+                            {matchedReaction.wordEquation}
+                          </div>
+                        </div>
 
-                    {/* Balanced Chemical Equation */}
-                    <div className="rounded-xl border border-emerald-500/40 bg-slate-900/90 px-5 py-2.5 text-center">
-                      <span className="text-[11px] text-slate-400 font-mono">
-                        Balanced Chemical Equation:
-                      </span>
-                      <div className="text-sm sm:text-base font-bold text-emerald-400 font-mono tracking-wide mt-0.5">
-                        {matchedReaction.equation}
+                        <div className="flex flex-wrap items-center justify-center gap-3">
+                          <button
+                            onClick={() => setShowBondingAnimation(true)}
+                            className="flex items-center gap-1.5 rounded-xl border border-emerald-500/50 bg-emerald-500/20 px-3.5 py-2 text-xs font-bold text-emerald-300 hover:bg-emerald-500/30 transition-all active:scale-95"
+                          >
+                            <Zap className="h-3.5 w-3.5 text-emerald-400" /> View Element Bonding
+                          </button>
+                          <button
+                            onClick={handleStartReaction}
+                            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition-all"
+                          >
+                            <RotateCcw className="h-3.5 w-3.5" /> Replay Reaction
+                          </button>
+                          <button
+                            onClick={handleClearChamber}
+                            className="flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-all"
+                          >
+                            Try Another Reaction
+                          </button>
+                        </div>
                       </div>
-                      <div className="text-xs text-slate-300 mt-1">
-                        {matchedReaction.wordEquation}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={handleStartReaction}
-                        className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-slate-800 px-3.5 py-2 text-xs font-semibold text-emerald-300 hover:bg-slate-700"
-                      >
-                        <RotateCcw className="h-3.5 w-3.5" /> Replay Simulation
-                      </button>
-                      <button
-                        onClick={handleClearChamber}
-                        className="flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 hover:bg-emerald-400"
-                      >
-                        Try Another Reaction
-                      </button>
-                    </div>
-                  </div>
+                    )}
+                  </>
                 )}
               </div>
 
