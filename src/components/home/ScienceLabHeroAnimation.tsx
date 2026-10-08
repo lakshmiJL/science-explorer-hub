@@ -11,6 +11,7 @@ import {
   Sliders,
   ChevronRight,
   ShieldAlert,
+  Rocket,
 } from "lucide-react";
 import { LabType } from "../../types/science";
 
@@ -972,6 +973,13 @@ export function ScienceLabHeroAnimation({ onSelectLab }: ScienceLabHeroAnimation
             >
               <Activity className="h-3 w-3 text-amber-400" />
               <span>Disasters</span>
+            </button>
+            <button
+              onClick={() => onSelectLab("space")}
+              className="flex items-center gap-1 rounded-lg border border-cyan-500/30 bg-cyan-950/40 px-2.5 py-1 text-[11px] font-semibold text-cyan-300 hover:bg-cyan-900/60 transition-all"
+            >
+              <Rocket className="h-3 w-3 text-cyan-400" />
+              <span>Space Lab</span>
             </button>
           </div>
         )}

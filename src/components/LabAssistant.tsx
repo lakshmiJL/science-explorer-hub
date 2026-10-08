@@ -3,13 +3,13 @@ import { LAB_ASSISTANT_FAQ, AssistantQuestion } from "../data/assistantData";
 import { Bot, Sparkles, X, Search, HelpCircle, BookOpen, Lightbulb } from "lucide-react";
 
 interface LabAssistantProps {
-  currentLab?: "chemistry" | "genetics" | "disasters";
+  currentLab?: "chemistry" | "genetics" | "disasters" | "space";
 }
 
 export const LabAssistant: React.FC<LabAssistantProps> = ({ currentLab }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<
-    "all" | "chemistry" | "genetics" | "disasters"
+    "all" | "chemistry" | "genetics" | "disasters" | "space"
   >(currentLab || "all");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeQuestion, setActiveQuestion] = useState<AssistantQuestion | null>(null);
@@ -82,6 +82,7 @@ export const LabAssistant: React.FC<LabAssistantProps> = ({ currentLab }) => {
                     { id: "chemistry", label: "Chemical Reactions" },
                     { id: "genetics", label: "DNA & Genetics" },
                     { id: "disasters", label: "Natural Disasters" },
+                    { id: "space", label: "Space Landing" },
                   ] as const
                 ).map((tab) => (
                   <button
@@ -106,7 +107,7 @@ export const LabAssistant: React.FC<LabAssistantProps> = ({ currentLab }) => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   type="text"
-                  placeholder="Search a concept (e.g. atoms, dominant allele, epicenter, magma)..."
+                  placeholder="Search a concept (e.g. atoms, allele, thrust, gravity, suicide burn)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full rounded-xl border border-border bg-background py-2 pl-9 pr-4 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"

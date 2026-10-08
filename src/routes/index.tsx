@@ -6,12 +6,14 @@ import { LabAssistant } from "../components/LabAssistant";
 import { ChemicalReactionLab } from "../components/chemistry/ChemicalReactionLab";
 import { DnaGeneticsLab } from "../components/genetics/DnaGeneticsLab";
 import { NaturalDisastersLab } from "../components/disasters/NaturalDisastersLab";
+import { SpaceLandingLab } from "../components/space/SpaceLandingLab";
 import { ScienceLabHeroAnimation } from "../components/home/ScienceLabHeroAnimation";
 import { LabType } from "../types/science";
 import {
   Beaker,
   Dna,
   Globe,
+  Rocket,
   Sparkles,
   ArrowRight,
   Award,
@@ -89,6 +91,10 @@ function ScienceExplorerApp() {
                     <CheckCircle2 className="h-4 w-4 text-amber-400" />
                     <span>{progress.disastersSimulated.length} Disasters Modeled</span>
                   </div>
+                  <div className="flex items-center gap-1.5 rounded-full border border-slate-800 bg-slate-900/80 px-3 py-1">
+                    <CheckCircle2 className="h-4 w-4 text-cyan-400" />
+                    <span>{(progress.spaceLandingsCompleted || []).length} Landings Achieved</span>
+                  </div>
                 </div>
               </div>
 
@@ -98,7 +104,7 @@ function ScienceExplorerApp() {
               </div>
             </section>
 
-            {/* THREE LARGE INTERACTIVE LABORATORY ENTRANCES */}
+            {/* FOUR LARGE INTERACTIVE LABORATORY ENTRANCES */}
             <section className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -112,7 +118,7 @@ function ScienceExplorerApp() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {/* LAB 1: Chemical Reaction Lab */}
                 <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-emerald-500/30 bg-card p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/60 hover:shadow-emerald-500/10">
                   <div className="space-y-4">
@@ -238,6 +244,49 @@ function ScienceExplorerApp() {
                     </button>
                   </div>
                 </div>
+
+                {/* LAB 4: Space Landing Lab */}
+                <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-cyan-500/30 bg-card p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/60 hover:shadow-cyan-500/10">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400 transition-transform group-hover:scale-110">
+                        <Rocket className="h-6 w-6" />
+                      </div>
+                      <span className="rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-bold text-cyan-400">
+                        Module 04
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-xs font-semibold text-cyan-500 dark:text-cyan-400">
+                        Planetary Astrodynamics
+                      </span>
+                      <h3 className="text-xl font-bold text-foreground mt-0.5">
+                        Space Landing Lab
+                      </h3>
+                      <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                        Pilot an Artemis spacecraft to touchdown on the Moon, Mars, Earth, or custom
+                        worlds. Manage continuous gravity, thrust, inertia, fuel, and touchdown
+                        angle.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1 text-xs text-muted-foreground font-medium">
+                      <Compass className="h-4 w-4 text-cyan-400" />
+                      <span>Orbital Physics • 5 Mission Levels</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-border/60">
+                    <button
+                      onClick={() => setActiveLab("space")}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-600 px-4 py-2.5 text-xs font-bold text-white shadow-md transition-all hover:bg-cyan-500 active:scale-95"
+                    >
+                      <span>Enter Space Lab</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -299,6 +348,7 @@ function ScienceExplorerApp() {
         {activeLab === "chemistry" && <ChemicalReactionLab />}
         {activeLab === "genetics" && <DnaGeneticsLab />}
         {activeLab === "disasters" && <NaturalDisastersLab />}
+        {activeLab === "space" && <SpaceLandingLab />}
       </main>
 
       {/* Floating AI Science Lab Assistant */}
@@ -313,8 +363,8 @@ function ScienceExplorerApp() {
             <span>— Virtual Science Explorer Hub</span>
           </div>
           <div className="text-[11px] text-muted-foreground">
-            Educational simulations for chemistry, genetics, and natural disasters • Scientific
-            models for ages 11–16
+            Educational simulations for chemistry, genetics, natural disasters & space landings •
+            Scientific models for ages 11–16
           </div>
         </div>
       </footer>

@@ -14,6 +14,7 @@ interface LabProgressContextType {
   markReactionCompleted: (reactionId: string) => void;
   recordOffspringCreated: () => void;
   markDisasterSimulated: (disasterId: string) => void;
+  markSpaceLandingCompleted: (planetId: string) => void;
   recordQuizScore: (labId: LabType, score: number, total: number) => void;
   resetAllProgress: () => void;
   badges: Badge[];
@@ -23,6 +24,7 @@ const DEFAULT_PROGRESS: LabProgress = {
   chemistryExperimentsCompleted: [],
   geneticsOffspringCreated: 0,
   disastersSimulated: [],
+  spaceLandingsCompleted: [],
   quizScores: {},
   unlockedBadges: [],
 };
@@ -79,6 +81,17 @@ export const LabProgressProvider: React.FC<{ children: React.ReactNode }> = ({ c
       return {
         ...prev,
         disastersSimulated: [...prev.disastersSimulated, disasterId],
+      };
+    });
+  };
+
+  const markSpaceLandingCompleted = (planetId: string) => {
+    setProgress((prev) => {
+      const current = prev.spaceLandingsCompleted || [];
+      if (current.includes(planetId)) return prev;
+      return {
+        ...prev,
+        spaceLandingsCompleted: [...current, planetId],
       };
     });
   };
@@ -145,6 +158,21 @@ export const LabProgressProvider: React.FC<{ children: React.ReactNode }> = ({ c
       unlocked: progress.disastersSimulated.length >= 6,
     },
     {
+      id: "lunar-pilot",
+      name: "Lunar Touchdown",
+      description: "Successfully landed a spacecraft within safe velocity and pitch margins.",
+      icon: "🚀",
+      unlocked: (progress.spaceLandingsCompleted || []).length >= 1,
+    },
+    {
+      id: "interplanetary-ace",
+      name: "Interplanetary Aviator",
+      description:
+        "Mastered orbital mechanics by landing on at least 2 different celestial bodies.",
+      icon: "🪐",
+      unlocked: (progress.spaceLandingsCompleted || []).length >= 2,
+    },
+    {
       id: "quiz-scholar",
       name: "Science Lab Scholar",
       description: "Completed quizzes in at least 2 labs with a passing grade (≥ 70%).",
@@ -162,6 +190,7 @@ export const LabProgressProvider: React.FC<{ children: React.ReactNode }> = ({ c
         markReactionCompleted,
         recordOffspringCreated,
         markDisasterSimulated,
+        markSpaceLandingCompleted,
         recordQuizScore,
         resetAllProgress,
         badges,

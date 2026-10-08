@@ -81,14 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Virtual science laboratory and interactive exploration hub with Chemical Reaction, DNA & Genetics, and Natural Disasters labs.",
+          "Virtual science laboratory and interactive exploration hub with Chemical Reaction, DNA & Genetics, Natural Disasters, and Space Landing labs.",
       },
       { name: "author", content: "AI Science Lab" },
       { property: "og:title", content: "AI Science Lab - Science Explorer Hub" },
       {
         property: "og:description",
         content:
-          "Virtual science laboratory and interactive exploration hub with Chemical Reaction, DNA & Genetics, and Natural Disasters labs.",
+          "Virtual science laboratory and interactive exploration hub with Chemical Reaction, DNA & Genetics, Natural Disasters, and Space Landing labs.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

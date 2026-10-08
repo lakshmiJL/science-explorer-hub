@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { LabType } from "../types/science";
 import { useLabProgress } from "../context/LabProgressContext";
-import { Beaker, Dna, Globe, Award, Sparkles, X, RotateCcw, Home } from "lucide-react";
+import { Beaker, Dna, Globe, Rocket, Award, Sparkles, X, RotateCcw, Home } from "lucide-react";
 
 interface HeaderProps {
   activeLab: LabType | "home";
@@ -91,6 +91,18 @@ export const Header: React.FC<HeaderProps> = ({ activeLab, onSelectLab }) => {
               <span>Disasters Lab</span>
             </button>
 
+            <button
+              onClick={() => onSelectLab("space")}
+              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all sm:px-3 sm:text-sm ${
+                activeLab === "space"
+                  ? "bg-primary text-primary-foreground shadow-sm font-semibold"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <Rocket className="h-3.5 w-3.5 text-cyan-400" />
+              <span>Space Lab</span>
+            </button>
+
             {/* Badges / Progress counter */}
             <button
               onClick={() => setShowBadgesModal(true)}
@@ -133,7 +145,7 @@ export const Header: React.FC<HeaderProps> = ({ activeLab, onSelectLab }) => {
             </div>
 
             {/* Overview Stats */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-xl border border-border/60 bg-muted/30 p-3 text-center">
                 <span className="text-2xl font-bold text-emerald-500">
                   {progress.chemistryExperimentsCompleted.length}
@@ -151,6 +163,12 @@ export const Header: React.FC<HeaderProps> = ({ activeLab, onSelectLab }) => {
                   {progress.disastersSimulated.length}
                 </span>
                 <p className="text-[11px] text-muted-foreground mt-0.5">Disasters Explored</p>
+              </div>
+              <div className="rounded-xl border border-border/60 bg-muted/30 p-3 text-center">
+                <span className="text-2xl font-bold text-cyan-400">
+                  {(progress.spaceLandingsCompleted || []).length}
+                </span>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Celestial Landings</p>
               </div>
             </div>
 

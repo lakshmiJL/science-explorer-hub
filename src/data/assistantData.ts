@@ -1,6 +1,6 @@
 export interface AssistantQuestion {
   id: string;
-  lab: "all" | "chemistry" | "genetics" | "disasters";
+  lab: "all" | "chemistry" | "genetics" | "disasters" | "space";
   question: string;
   answer: string;
   keyTakeaway: string;
@@ -116,5 +116,41 @@ export const LAB_ASSISTANT_FAQ: AssistantQuestion[] = [
       "Natural soil, trees, and wetlands act like natural sponges with high infiltration capacity — they absorb massive amounts of rain into groundwater. In cities, ground is covered by impervious asphalt and concrete. Rain cannot soak into the ground, so 100% of it rushes immediately into gutters and streets, turning roads into raging rivers within minutes.",
     keyTakeaway:
       "Wetlands absorb rainwater; concrete and asphalt speed up runoff into sudden flash floods.",
+  },
+
+  // Space Landing FAQs
+  {
+    id: "q-space-1",
+    lab: "space",
+    question: "Why does gravity differ across planets like the Moon, Mars, and Earth?",
+    answer:
+      "Newton's Universal Gravitation law dictates that surface gravity depends on the celestial body's mass and radius (g = G·M/r²). The Moon has only ~1% of Earth's mass, generating g = 1.62 m/s² (1/6th Earth). Mars is larger than the Moon but smaller than Earth, with g = 3.72 m/s² (~38% Earth). Earth's huge mass pulls down at 9.81 m/s², requiring far greater engine thrust.",
+    keyTakeaway: "More planetary mass = stronger gravity = faster descent acceleration.",
+  },
+  {
+    id: "q-space-2",
+    lab: "space",
+    question: "What is a 'suicide burn' or hoverslam in aerospace engineering?",
+    answer:
+      "A suicide burn (or hoverslam) is a calculated landing maneuver where the main rocket engines ignite at 100% throttle at the absolute last second before touchdown, decelerating the spacecraft to precisely 0 m/s exactly as the landing legs make contact with the surface. It minimizes fuel lost to 'gravity drag' (holding the craft in the air), but leaves zero room for error if initiated too late.",
+    keyTakeaway: "Late, aggressive deceleration saves huge amounts of fuel vs prolonged hovering.",
+  },
+  {
+    id: "q-space-3",
+    lab: "space",
+    question: "How does spacecraft mass affect engine acceleration?",
+    answer:
+      "By Newton's Second Law of Motion (a = F / m), acceleration is inversely proportional to mass. When propellant tanks are full ('wet mass'), the heavy lander accelerates slowly. As the engines fire and propellant is expelled as exhaust, the lander becomes lighter ('dry mass'), meaning the same engine thrust produces significantly higher deceleration.",
+    keyTakeaway:
+      "As fuel burns, total spacecraft mass drops, making engine braking more responsive.",
+  },
+  {
+    id: "q-space-4",
+    lab: "space",
+    question: "Why does landing at a tilt angle cause the lander to tip over and crash?",
+    answer:
+      "The landing legs form a support base polygon. If the spacecraft touches down tilted past its critical tip-over angle (usually > 10°–13°), its Center of Mass extends outside the landing legs. Gravity then acts as an overturning torque (τ = r × F), flipping the lander onto its side and crushing the pressurized crew capsule.",
+    keyTakeaway:
+      "Keep pitch angle near 0°: landing outside the leg stance creates destructive tip-over torque.",
   },
 ];
